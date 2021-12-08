@@ -41,13 +41,13 @@ resource "aws_route53_record" "user-dev" {
   -----------------------------------------------------------------------------
 */
 resource "aws_instance" "test_instance" {
-  ami                    = data.aws_ami.test_ami.id
+  ami                    = "ami-0233c2d874b811deb"
   key_name               = "cp4na" # Comment this line for demo drama
   instance_type          = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.ssh-ports.id]
+  vpc_security_group_ids = ["sg-00f8e755282a6020a", "sg-02385ce295a3a1ceb"]
   ipv6_address_count     = 1
 
-  subnet_id                   = var.subnet # from the network_module
+  subnet_id                   = "subnet-05ce2bbb8a703e747"
   associate_public_ip_address = true
   hibernation                 = false
 
@@ -61,14 +61,14 @@ resource "aws_instance" "test_instance" {
 # -----------------------------------------------------------------------------
 resource "aws_security_group" "ssh-ports" {
   name   = "ssh-inbound"
-  vpc_id = var.vpc_network # from the network_module
+  vpc_id = "vpc-075b62b96d7768f47" # from the network_module
   # Inbound SSH from myOffice
   ingress {
     description = "Inbound from Home Office / TESTING ONLY"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.officeIPAddr]
+    #cidr_blocks = "172.31.0.0/16"
   }
   ingress {
     description = "IPv4 ICMP TESTING-ONLY - DELETE AFTER USE"
@@ -97,7 +97,7 @@ resource "aws_security_group" "ssh-ports" {
 # -----------------------------------------------------------------------------
 # Find the latest AMI; NOTE: MUST produce only 1 AMI ID.
 # -----------------------------------------------------------------------------
-data "aws_ami" "test_ami" {
+data "aws_ami" "linux" {
   most_recent = true
 
   filter {
